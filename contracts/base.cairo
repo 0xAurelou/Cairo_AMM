@@ -31,7 +31,7 @@ end
 # Increases the balance by the given amount.
 @external
 func increase_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        token_address : felt , amount : felt):
+        amount : felt):
     let (res) = balance.read()
     balance.write(res + amount)
     return ()

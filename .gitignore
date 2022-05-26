@@ -133,3 +133,7 @@ dmypy.json
 
 # vscode project settings
 .vscode/
+
+#Compile trash files
+127.0.0.1.deployments.txt
+artifacts/
