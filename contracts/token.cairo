@@ -1,39 +1,79 @@
-# Declare this file as a StarkNet contract.
+# Declare this file as a contract.
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.syscalls import get_caller_address
+from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.serialize import serialize_word
+from starkware.cairo.common.math import (
+    assert_le,
+    assert_lt,
+    sqrt,
+    sign,
+    abs_value,
+    signed_div_rem,
+    unsigned_div_rem,
+    assert_not_zero
+)
 
 
-@storage_var
-func get_token_amount (address : felt) -> (amount : felt):
+struct Token:
+    member name : felt
+    member address : felt
 end
 
 @storage_var
-func get_token_address_from_name (name : felt) -> (address : felt):
+func token(name : felt , address : felt, slot : felt) -> (token: Token):
 end
 
 @storage_var
-func token_name () -> (name : felt):
+func slot(address : felt) -> (slot : felt):
+end
+
+@storage_var
+func token_address_from_name (name : felt) -> (address : felt):
+end
+
+@storage_var
+func token_name (slot : felt) -> (token : Token):
+end
+
+@storage_var
+func nb_slot () -> (nb_slot : felt):
 end
 
 @external
-func create_token{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(name : felt):
-    let (res) = token_name.read()
-    token_name.write(name)
-    return()
-end
-
-@external
-func map_token_name_to_address {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(name : felt, address : felt): 
-    let (res) = get_token_address_from_name.read(name)
-    get_token_address_from_name.write(name, address)
+func add_token_to_slot{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(token_name : felt, token_address: felt):
+    let (address) = get_caller_address()
+    let (slot_token) = slot.read(address)
+    let res : Token = Token(token_name,token_address)
+    token.write(token_name, token_address,slot_token,res) 
+    slot.write(address, slot_token + 1)
+    nb_slot.write(slot_token + 1)
     return ()
 end
 
+
 @view
 func get_token_addr {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(name : felt) -> (address : felt):
-    let (res) = get_token_address_from_name.read(name)
+    let (res) = token_address_from_name.read(name)
     return (res)
 end
 
+@view 
+func get_token_from_name{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(name : felt, slot : felt, slot_len : felt) -> (token: Token):
+    alloc_locals
+    let tkn : Token = token_name.read(slot)
+    if tkn.name == name:
+        tempvar syscall_ptr = syscall_ptr
+        return (tkn)
+    end
+    let (local n_1) = get_token_from_name(name=name,slot=slot+1,slot_len=slot_len)
+    return(n_1)
+end
+
+@view
+func get_nb_slot{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (nb_slot : felt):
+    let (res) = nb_slot.read()
+    return (res)
+end

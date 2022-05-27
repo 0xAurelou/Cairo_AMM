@@ -1,6 +1,15 @@
 # Create2
 Create 2 function in Cairo
 
+##Token Address:
+
+-Eth
+  tokenId : 1
+  name in felt : 4543560
+  address in felt : 6542
+
+
+
 ##Things to investigate:
 Like Create2
 
