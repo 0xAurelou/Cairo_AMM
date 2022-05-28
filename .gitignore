@@ -136,5 +136,5 @@ dmypy.json
 
 #Compile trash files
 127.0.0.1.deployments.txt
-artifacts
+artifacts/
 node.json
