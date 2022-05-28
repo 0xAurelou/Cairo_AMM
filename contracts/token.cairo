@@ -44,8 +44,7 @@ func nb_slot () -> (nb_slot : felt):
 end
 
 @external
-func add_token_to_slot{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(token_name : felt, token_address: felt, token_price : felt):
-    let (address) = get_caller_address()
+func add_token_to_slot{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(address : felt, token_name : felt, token_address: felt, token_price : felt):
     let (slot_token) = slot.read(address)
     let res : Token = Token(token_name,token_address, token_price)
     create_token.write(token_name, token_address,slot_token,res) 
@@ -78,16 +77,4 @@ func get_slot{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}
     let (address) = get_caller_address()
     let (res) = slot.read(address)
     return (res)
-end
-
-@view
-func get_token_from_name{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(name : felt, slot : felt, slot_len : felt) -> (token: Token):
-    alloc_locals
-    let tkn : Token = token.read(slot)
-    if tkn.name == name:
-        tempvar syscall_ptr = syscall_ptr
-        return (tkn)
-    end
-    let (local n_1) = get_token_from_name(name=name,slot=slot+1,slot_len=slot_len)
-    return(n_1)
 end
