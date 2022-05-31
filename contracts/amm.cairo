@@ -4,68 +4,48 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.math import assert_le, assert_nn_le, unsigned_div_rem
 from starkware.starknet.common.syscalls import storage_read, storage_write
+from contracts.user import user
 
 @storage_var
 func pool_balance(token_type : felt) -> (balance : felt):
 end
 
-@storage_var
-func account_balance(account_id : felt, token_type : felt) -> (
-    balance : felt
-):
-end
-
 @view
-func get_account_token_balance{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}(account_id : felt, token_type : felt) -> (balance : felt):
+func get_account_token_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    account_id : felt, token_type : felt
+) -> (balance : felt):
     return account_balance.read(account_id, token_type)
 end
 
-
 @view
-func get_pool_token_balance{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}(token_type : felt) -> (balance : felt):
+func get_pool_token_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    token_type : felt
+) -> (balance : felt):
     return pool_balance.read(token_type)
 end
 
-const MAX_BALANCE = 2**64 -1
+const MAX_BALANCE = 2 ** 64 - 1
 
 const TOKEN_TYPE_A = 1
 const TOKEN_TYPE_B = 2
 
-const POOL_UPPER_BOUND = 2**30
-const ACCOUNT_BALANCE_BOUND = 2**27
+const POOL_UPPER_BOUND = 2 ** 30
+const ACCOUNT_BALANCE_BOUND = 2 ** 27
 
-func modify_account_balance{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}(account_id : felt, token_type : felt, amount : felt):
-    let (current_balance) = account_balance.read(
-        account_id, token_type
-    )
+func modify_account_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    account_id : felt, token_type : felt, amount : felt
+):
+    let (current_balance) = account_balance.read(account_id, token_type)
     tempvar new_balance = current_balance + amount
-    assert_nn_le(new_balance, MAX_BALANCE- 1)
-    account_balance.write(
-        account_id=account_id,
-        token_type=token_type,
-        value=new_balance,
-    )
+    assert_nn_le(new_balance, MAX_BALANCE - 1)
+    account_balance.write(account_id=account_id, token_type=token_type, value=new_balance)
     return ()
 end
 
-func set_pool_token_balance{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}(token_type : felt, balance : felt):
-    assert_nn_le(balance, MAX_BALANCE- 1)
+func set_pool_token_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    token_type : felt, balance : felt
+):
+    assert_nn_le(balance, MAX_BALANCE - 1)
     pool_balance.write(token_type, balance)
     return ()
 end
@@ -95,7 +75,6 @@ func do_swap{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     return (amount_to=amount_to)
 end
 
-
 func get_opposite_token(token_type : felt) -> (t : felt):
     if token_type == TOKEN_TYPE_A:
         return (TOKEN_TYPE_B)
@@ -104,13 +83,9 @@ func get_opposite_token(token_type : felt) -> (t : felt):
     end
 end
 
-func swap{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}(account_id : felt, token_from : felt, amount_from : felt) -> (
-    amount_to : felt
-):
+func swap{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    account_id : felt, token_from : felt, amount_from : felt
+) -> (amount_to : felt):
     # Verify that token_from is either TOKEN_TYPE_A or TOKEN_TYPE_B.
     assert (token_from - TOKEN_TYPE_A) * (token_from - TOKEN_TYPE_B) = 0
 
@@ -126,21 +101,16 @@ func swap{
     # Execute the actual swap.
     let (token_to) = get_opposite_token(token_type=token_from)
     let (amount_to) = do_swap(
-        account_id=account_id,
-        token_from=token_from,
-        token_to=token_to,
-        amount_from=amount_from,
+        account_id=account_id, token_from=token_from, token_to=token_to, amount_from=amount_from
     )
 
     return (amount_to=amount_to)
 end
 
 @external
-func init_pool{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}(token_a : felt, token_b : felt):
+func init_pool{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    token_a : felt, token_b : felt
+):
     assert_nn_le(token_a, POOL_UPPER_BOUND - 1)
     assert_nn_le(token_b, POOL_UPPER_BOUND - 1)
 
