@@ -64,27 +64,14 @@ end
 @view
 func get_token_from_name{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(actual_slot: felt, name : felt) -> (token : Token):
     let (nb_slot) = slot.read()
-    if actual_slot == nb_slot:
-        assert 1 = 0
-        let res : Token = Token(0,0,0) 
+    if actual_slot == nb_slot :
+        let res : Token = Token(0,0,0)
         return (res)
-     end
-
-    tempvar syscall_ptr = syscall_ptr
-    tempvar pedersen_ptr = pedersen_ptr
-    tempvar range_check_ptr = range_check_ptr
-    if actual_slot != nb_slot:
-        let (tkn) = get_token_from_slot(actual_slot)
-        tempvar syscall_ptr = syscall_ptr
-        tempvar pedersen_ptr = pedersen_ptr
-        tempvar range_check_ptr = range_check_ptr
-        if name == tkn.name:
-            return (tkn)
-        end
     end
-    tempvar syscall_ptr = syscall_ptr
-    tempvar pedersen_ptr = pedersen_ptr
-    tempvar range_check_ptr = range_check_ptr
+    let (tkn) = get_token_from_slot(actual_slot)
+    if name == tkn.name:
+        return (tkn)
+    end
     return get_token_from_name(actual_slot=actual_slot+1,name=name)
 end
         
