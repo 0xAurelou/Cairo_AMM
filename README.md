@@ -4,10 +4,19 @@ Create 2 function in Cairo
 ##Token Address:
 
 -Eth
-  tokenId : 1
+  slot : 0
   name in felt : 4543560
   address in felt : 6542
 
+-Btc
+  slot : 1
+  name in felt : 4346947
+  address in felt : 8785
+
+-Bnb
+  slot : 2
+  name in felt : 4345410
+  address in felt : 1332
 
 
 ##Things to investigate:
