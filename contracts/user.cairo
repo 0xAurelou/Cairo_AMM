@@ -50,9 +50,9 @@ namespace user:
     end
 
     func increase_token_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        user_id : felt, token_type : felt, amount : felt
+        user_id : felt, token_address : felt, amount : felt
     ):
-        let (res) = get_token_amount.read(user_id, token_type)
+        let (res) = get_token_amount.read(user_id, token_address)
         account_balance.write(user_id, res + amount)
         return ()
     end
