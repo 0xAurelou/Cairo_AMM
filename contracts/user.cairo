@@ -4,6 +4,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.syscalls import get_caller_address
 from starkware.cairo.common.math import assert_le, assert_nn_le, unsigned_div_rem
+from contracts.token_interface import IToken, Token
 
 @storage_var
 func user_id() -> (res : felt):
@@ -19,7 +20,7 @@ func token_address(name : felt) -> (address : felt):
 end
 
 @storage_var
-func get_token_amount(user_id : felt, token_type : felt) -> (res : felt):
+func get_token_amount(user_id : felt, token_address : felt)-> (res : felt):
 end
 
 @storage_var
@@ -31,7 +32,7 @@ func increase_balance_called(current_balance : felt, amount : felt):
 end
 
 @storage_var
-func account_balance(account_id : felt, token_type : felt) -> (balance : felt):
+func account_balance(account_id : felt, token_address : felt) -> (balance : felt):
 end
 
 @event
