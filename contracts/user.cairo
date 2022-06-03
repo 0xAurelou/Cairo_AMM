@@ -24,14 +24,6 @@ func get_token_amount(user_id : felt, token_address : felt)-> (res : felt):
 end
 
 @storage_var
-func user_balance(account_id : felt) -> (res : felt):
-end
-
-@event
-func increase_balance_called(current_balance : felt, amount : felt):
-end
-
-@storage_var
 func account_balance(account_id : felt, token_address : felt) -> (balance : felt):
 end
 
@@ -76,9 +68,9 @@ namespace user:
     # Returns the current balance.
     @view
     func get_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        user_id : felt
+        user_id : felt, token_address : felt
     ) -> (res : felt):
-        let (res) = user_balance.read(user_id)
+        let (res) = account_balance.read(user_id, token_address)
         return (res)
     end
 end
