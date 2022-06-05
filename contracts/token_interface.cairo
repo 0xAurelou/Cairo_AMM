@@ -42,6 +42,12 @@ range_check_ptr
     return (res)
 end
 
+@external
+func call_get_token_from_slot{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(contract_address : felt, slot_number : felt) ->(token : Token):
+    let (res) = IToken.get_token_from_slot(contract_address = contract_address, slot_number=slot_number)
+    return (res)
+end
+
 @view
 func call_get_nb_slot{
         syscall_ptr: felt *,
@@ -54,12 +60,12 @@ func call_get_nb_slot{
 end
 
 @view
-    func call_get_address{
-        syscall_ptr: felt *,
-        pedersen_ptr: HashBuiltin *,
-        range_check_ptr
-    }(contract_address)
-        ->(address: felt): 
-    let(res) = IToken.get_address(contract_address =contract_address) 
+func call_get_address{
+    syscall_ptr: felt *,
+    pedersen_ptr: HashBuiltin *,
+    range_check_ptr
+}(contract_address)
+    ->(address: felt): 
+    let(res) = IToken.get_address(contract_address = contract_address) 
     return (res)
 end

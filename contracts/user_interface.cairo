@@ -12,6 +12,10 @@ namespace IUser:
     func increase_token_balance(user_id : felt, token_address : felt, amount : felt) -> ():
     end
 
+
+    func get_token_amount(user_id : felt, token_address : felt)-> (res : felt):
+    end
+
     func get_user_id() -> (user_id : felt):
     end
 
@@ -47,8 +51,13 @@ func call_get_user_count{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range
 end
 
 @view
-func get_balance {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(contract_address, user_id : felt, token_address : felt) -> (res: felt):
+func call_get_balance {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(contract_address, user_id : felt, token_address : felt) -> (res: felt):
     let (res) = IUser.get_balance(contract_address=contract_address,user_id=user_id, token_address=token_address)
     return (res)
-en
+end
 
+@view
+func call_get_token_amount {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(contract_address, user_id : felt, token_address : felt) -> (res: felt):
+    let (res) = IUser.get_token_amount(contract_address=contract_address,user_id=user_id, token_address=token_address)
+    return (res)
+end
